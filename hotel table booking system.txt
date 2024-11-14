@@ -1,0 +1,162 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+class Customer {
+    private String name;
+    private String phoneNumber;
+ public Customer(String name, String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
+public String getName() {
+        return name;
+    }
+public String getPhoneNumber() {
+        return phoneNumber;
+    }
+public String toString() {
+        return "Customer Name: " + name + ", Phone: " + phoneNumber;
+    }
+}class Table {
+    private int tableId;
+    private int capacity;
+private boolean isBooked;
+public Table(int tableId, int capacity) {
+        this.tableId = tableId;
+        this.capacity = capacity;
+        this.isBooked = false;
+    }public int getTableId() {
+        return tableId;
+    }public int getCapacity() {
+        return capacity;
+    }public boolean isBooked() {
+        return isBooked;
+    }
+public void setBooked(boolean booked) {
+        isBooked = booked;
+    }
+public String toString() {
+        return "Table ID: " + tableId + ", Capacity: " + capacity + ", Booked: " + isBooked;
+    }
+}
+class Booking {
+    Customer customer;
+    Table table;
+public Booking(Customer customer, Table table) {
+        this.customer = customer;
+        this.table = table;
+    }public String toString() {
+        return "Booking Details: " + customer.toString() + ", Table ID: " + table.getTableId() + ", Capacity: " + table.getCapacity();
+    }
+}class Hotel {
+    private ArrayList<Table> tables;
+    private ArrayList<Booking> bookings;
+public Hotel() {
+        tables = new ArrayList<>();
+        bookings = new ArrayList<>();
+        initializeTables();
+    }private void initializeTables() {
+        tables.add(new Table(1, 2));
+        tables.add(new Table(2, 4));
+        tables.add(new Table(3, 6));
+        tables.add(new Table(4, 8));
+    }public void displayAvailableTables() {
+        boolean anyAvailable = false;
+        System.out.println("Available Tables:");
+        for (Table table : tables) {
+            if (!table.isBooked()) {
+                System.out.println(table);
+                anyAvailable = true;
+            }
+        }
+        if (!anyAvailable) {
+            System.out.println("No tables are currently available.");
+        }
+}public void bookTable(Customer customer, int tableId) {
+        boolean tableExists = false;
+ for (Table table : tables) {
+            if (table.getTableId() == tableId) {
+                tableExists = true;
+                if (!table.isBooked()) {
+                    table.setBooked(true);
+                    Booking booking = new Booking(customer, table);
+                    bookings.add(booking);
+                    System.out.println("Booking successful!");
+                    System.out.println(booking);
+                    return;
+                } else {
+                    System.out.println("Table " + tableId + " is already booked.");
+                    return;
+                }
+            }
+        }if (!tableExists) {
+            System.out.println("Invalid table ID. Please select a valid table.");
+        }
+    }
+    public void displayBookings() {
+        System.out.println("All Bookings:");
+       if (bookings.isEmpty()) {
+            System.out.println("No bookings available.");
+        } else {
+            for (Booking booking : bookings) {
+                System.out.println(booking);
+            }
+        }
+    }public void cancelBooking(int tableId) {
+        for (Booking booking : bookings) {
+            if (booking.table.getTableId() == tableId) {
+                booking.table.setBooked(false);  // Free up the table
+                bookings.remove(booking);        // Remove the booking
+                System.out.println("Booking for Table ID " + tableId + " has been canceled.");
+                return;
+            }
+        }
+        System.out.println("No booking found for Table ID " + tableId + ".");
+    }
+}public class HotelTableBookingSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Hotel hotel = new Hotel();
+while (true) {
+            System.out.println("\n--- Hotel Table Booking System ---");
+            System.out.println("1. Display Available Tables");
+            System.out.println("2. Book a Table");
+            System.out.println("3. View All Bookings");
+            System.out.println("4. Cancel a Booking");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+switch (choice) {
+                case 1:
+                    hotel.displayAvailableTables();
+                    break;
+                case 2:
+                    System.out.print("Enter customer name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter phone number: ");
+                    String phone = scanner.nextLine();
+                    Customer customer = new Customer(name, phone);
+                   hotel.displayAvailableTables();
+                    System.out.print("Enter table ID to book: ");
+                    int tableId = scanner.nextInt();
+                    hotel.bookTable(customer, tableId);
+                    break;
+                case 3:
+                    hotel.displayBookings();
+                    break;
+                case 4:
+                    System.out.print("Enter the table ID to cancel booking: ");
+                    int cancelTableId = scanner.nextInt();
+                    hotel.cancelBooking(cancelTableId);
+                    break;
+                case 5:
+                    System.out.println("Thank you for using the Hotel Table Booking System. Goodbye!");
+                    scanner.close();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
